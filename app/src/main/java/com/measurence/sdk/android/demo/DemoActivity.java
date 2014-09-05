@@ -5,17 +5,16 @@ import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.measurence.api_subscription.ApiSubscription;
-import com.measurence.api_subscription.ApiSubscriptionsRegistry;
-import com.measurence.api_subscription.PartnerAccount;
-import com.measurence.api_subscription.impl.ApiSubscriptionRestImpl;
-import com.measurence.identity_discovery.UserIdentity;
+import org.apache.commons.io.IOUtils;
 
-import scala.Some;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 
 public class DemoActivity extends Activity {
 
@@ -25,22 +24,38 @@ public class DemoActivity extends Activity {
         String apiSubscriptionsRegistryHost = "localhost";
         int  apiSubscriptionsRegistryPort = 10082;
 
-        PartnerAccount partnerAccount = new PartnerAccount("example_partner");
-        UserIdentity userIdentity = new UserIdentity("example_identity");
+//        PartnerAccount partnerAccount = new PartnerAccount("example_partner");
+//        UserIdentity userIdentity = new UserIdentity("example_identity");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
 
         WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        String macAddress = wifiInfo.getMacAddress();
+        String macAddress = wifiInfo.getMacAddress().replace(":", "");
 
         TextView textMessages = (TextView)findViewById(R.id.textMessages);
         textMessages.setText("Your Mac Address:" + macAddress);
 
-        ApiSubscriptionsRegistry apiSubscriptionsRegistry = new ApiSubscriptionRestImpl(apiSubscriptionsRegistryHost, apiSubscriptionsRegistryPort);
-        ApiSubscription apiSubscription = new ApiSubscription(partnerAccount, userIdentity, new Some<String>(macAddress));
-        apiSubscriptionsRegistry.apply(apiSubscription);
+        // ------------
+        // [TODO] to be removed and properly handled
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        // ------------
+
+
+
+        URI apiSubscriptionURI = URI.create("http://10.0.3.2:10082/api/apply_subscription_with_mac/example_partner/example_identity/" + macAddress);
+        InputStream apiSubscriptionRequestStream = null;
+        try {
+            apiSubscriptionRequestStream = apiSubscriptionURI.toURL().openStream();
+            IOUtils.toString(apiSubscriptionRequestStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(apiSubscriptionRequestStream);
+        }
+
     }
 
 
