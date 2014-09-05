@@ -9,11 +9,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.measurence.api_subscription.ApiSubscription;
+import com.measurence.api_subscription.ApiSubscriptionsRegistry;
+import com.measurence.api_subscription.PartnerAccount;
+import com.measurence.api_subscription.impl.ApiSubscriptionRestImpl;
+import com.measurence.identity_discovery.UserIdentity;
+
+import scala.Some;
 
 public class DemoActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        String apiSubscriptionsRegistryHost = "localhost";
+        int  apiSubscriptionsRegistryPort = 10082;
+
+        PartnerAccount partnerAccount = new PartnerAccount("example_partner");
+        UserIdentity userIdentity = new UserIdentity("example_identity");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
 
@@ -23,6 +37,10 @@ public class DemoActivity extends Activity {
 
         TextView textMessages = (TextView)findViewById(R.id.textMessages);
         textMessages.setText("Your Mac Address:" + macAddress);
+
+        ApiSubscriptionsRegistry apiSubscriptionsRegistry = new ApiSubscriptionRestImpl(apiSubscriptionsRegistryHost, apiSubscriptionsRegistryPort);
+        ApiSubscription apiSubscription = new ApiSubscription(partnerAccount, userIdentity, new Some<String>(macAddress));
+        apiSubscriptionsRegistry.apply(apiSubscription);
     }
 
 
