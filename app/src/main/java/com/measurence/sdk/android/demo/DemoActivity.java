@@ -115,6 +115,12 @@ public class DemoActivity extends Activity {
     }
 
     private void applyToApiSubscription() {
+
+        // [TODO] has to be removed ASAP
+        Boolean applyToSubscriptionEnabled = false;
+        Log.i(TAG, "apply to api subscription|enabled|" + applyToSubscriptionEnabled);
+        if (!applyToSubscriptionEnabled) return;
+
         //String apiSubscriptionsRegistryHost = "10.0.3.2";
         String apiSubscriptionsRegistryHost = "192.168.1.203";
         int  apiSubscriptionsRegistryPort = 10082;
