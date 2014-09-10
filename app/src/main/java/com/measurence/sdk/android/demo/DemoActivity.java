@@ -27,6 +27,7 @@ import java.net.URI;
 public class DemoActivity extends Activity {
 
     public static final String PROPERTY_REG_ID = "registration_id";
+    public static final String PROPERTY_IS_APP_SUBSCRIBED_TO_MEASURENCE_API = "is_app_subscribed_to_measurence_api";
     private static final String PROPERTY_APP_VERSION = "0.1-SNAPSHOT";
     private final static String SENDER_ID = "1093814696074";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -47,12 +48,9 @@ public class DemoActivity extends Activity {
         context = getApplicationContext();
         if (checkPlayServices()) {
             registrationId = getRegistrationId(context);
+            if (registrationId.isEmpty()) registerInBackground();
 
-            if (registrationId.isEmpty()) {
-                registerInBackground();
-            } else {
-                applyToApiSubscription();
-            }
+            if (!isAppSubscribedToMeasurenceApi(context)) applyToApiSubscription();
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
@@ -104,6 +102,34 @@ public class DemoActivity extends Activity {
         super.onPostCreate(savedInstanceState);
     }
 
+    private void storeAppSubscriptionToMeasurenceApi(Context context) {
+        final SharedPreferences prefs = getGCMPreferences();
+        int appVersion = getAppVersion(context);
+        Log.i(TAG, "Saving appSubscriptionToMeasurenceApi on app version " + appVersion);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(PROPERTY_IS_APP_SUBSCRIBED_TO_MEASURENCE_API, true);
+        editor.putInt(PROPERTY_APP_VERSION, appVersion);
+        editor.apply();
+    }
+
+    private boolean isAppSubscribedToMeasurenceApi(Context context) {
+        final SharedPreferences prefs = getGCMPreferences();
+        boolean isAppSubscribedToMeasurenceApi = prefs.getBoolean(PROPERTY_IS_APP_SUBSCRIBED_TO_MEASURENCE_API, false);
+        if (!isAppSubscribedToMeasurenceApi) return false;
+
+        // Check if app was updated; if so, it must clear the registration ID
+        // since the existing regID is not guaranteed to work with the new
+        // app version.
+        int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+        int currentVersion = getAppVersion(context);
+        if (registeredVersion != currentVersion) {
+            Log.i(TAG, "app was subscribed to Measurence apis but a new registration id has been issued given to app version change");
+            return false;
+        }
+
+        return true;
+    }
+
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getGCMPreferences();
         int appVersion = getAppVersion(context);
@@ -117,7 +143,7 @@ public class DemoActivity extends Activity {
     private void applyToApiSubscription() {
 
         // [TODO] has to be removed ASAP
-        Boolean applyToSubscriptionEnabled = false;
+        Boolean applyToSubscriptionEnabled = true;
         Log.i(TAG, "apply to api subscription|enabled|" + applyToSubscriptionEnabled);
         if (!applyToSubscriptionEnabled) return;
 
@@ -137,13 +163,22 @@ public class DemoActivity extends Activity {
         StrictMode.setThreadPolicy(policy);
         // ------------
 
-        URI apiSubscriptionURI = URI.create("http://" + apiSubscriptionsRegistryHost + ":" + apiSubscriptionsRegistryPort + "/api/apply_subscription_with_mac/example_partner/example_identity/" + macAddress);
+        String partnerId = "example_partner";
+        String userIdentity = "example_identity";
+
+        URI apiSubscriptionURI = URI.create("http://" +
+                apiSubscriptionsRegistryHost + ":" + apiSubscriptionsRegistryPort + "/api/android/apply_subscription/" +
+                partnerId + "/" + userIdentity + "/" + registrationId + "/" + macAddress);
+        Log.i(TAG, "calling|" + apiSubscriptionURI);
+
         InputStream apiSubscriptionRequestStream = null;
         try {
             apiSubscriptionRequestStream = apiSubscriptionURI.toURL().openStream();
             String result = IOUtils.toString(apiSubscriptionRequestStream);
             Log.i(TAG, "api subscription result|" + result);
+            storeAppSubscriptionToMeasurenceApi(context);
         } catch (IOException e) {
+            Log.i(TAG, "api subscription error occurred|" + e.getMessage());
             e.printStackTrace();
         } finally {
             IOUtils.closeQuietly(apiSubscriptionRequestStream);
