@@ -166,9 +166,8 @@ public class DemoActivity extends Activity {
         String partnerId = "example_partner";
         String userIdentity = "example_identity";
 
-        URI apiSubscriptionURI = URI.create("http://" +
-                apiSubscriptionsRegistryHost + ":" + apiSubscriptionsRegistryPort + "/api/android/apply_subscription/" +
-                partnerId + "/" + userIdentity + "/" + registrationId + "/" + macAddress);
+        URI apiSubscriptionURI = getAndroidApplySubscriptionURI(apiSubscriptionsRegistryHost, apiSubscriptionsRegistryPort, macAddress, partnerId, userIdentity);
+        //URI apiSubscriptionURI = getHttpPostApplySubscriptionURI(apiSubscriptionsRegistryHost, apiSubscriptionsRegistryPort, macAddress, partnerId, userIdentity);
         Log.i(TAG, "calling|" + apiSubscriptionURI);
 
         InputStream apiSubscriptionRequestStream = null;
@@ -183,6 +182,18 @@ public class DemoActivity extends Activity {
         } finally {
             IOUtils.closeQuietly(apiSubscriptionRequestStream);
         }
+    }
+
+    private URI getHttpPostApplySubscriptionURI(String apiSubscriptionsRegistryHost, int apiSubscriptionsRegistryPort, String macAddress, String partnerId, String userIdentity) {
+        return URI.create("http://" +
+                apiSubscriptionsRegistryHost + ":" + apiSubscriptionsRegistryPort + "/api/http_post/apply_subscription/" +
+                partnerId + "/" + userIdentity + "/" + macAddress);
+    }
+
+    private URI getAndroidApplySubscriptionURI(String apiSubscriptionsRegistryHost, int apiSubscriptionsRegistryPort, String macAddress, String partnerId, String userIdentity) {
+        return URI.create("http://" +
+                apiSubscriptionsRegistryHost + ":" + apiSubscriptionsRegistryPort + "/api/android/apply_subscription/" +
+                partnerId + "/" + userIdentity + "/" + registrationId + "/" + macAddress);
     }
 
     private static int getAppVersion(Context context) {
