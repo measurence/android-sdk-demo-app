@@ -148,8 +148,11 @@ public class DemoActivity extends Activity {
         if (!applyToSubscriptionEnabled) return;
 
         //String apiSubscriptionsRegistryHost = "10.0.3.2";
-        String apiSubscriptionsRegistryHost = "192.168.1.203";
-        int  apiSubscriptionsRegistryPort = 10082;
+        //String apiSubscriptionsRegistryHost = "192.168.1.203";
+        //int  apiSubscriptionsRegistryPort = 10082;
+
+        String apiSubscriptionsRegistryHost = "api.us-east-1.measurence.com";
+        int  apiSubscriptionsRegistryPort = 80;
 
         WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
