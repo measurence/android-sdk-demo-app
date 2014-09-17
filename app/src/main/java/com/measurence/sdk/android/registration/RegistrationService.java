@@ -88,6 +88,8 @@ public class RegistrationService extends IntentService {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         String macAddress = wifiInfo.getMacAddress().replace(":", "");
 
+        String registrationId = RegistrationUtil.getRegistrationId(getApplicationContext());
+
         //Log.i(TAG, "mac|" + macAddress + "|registration id|" + registrationId);
         // TODO: use Uri.builder with port. Add partner identity from gcm config
         // and user_identity as param
@@ -98,6 +100,7 @@ public class RegistrationService extends IntentService {
                 + apiSubscriptionRegistryPath + "/"
                 + partnerId + "/"
                 + user_identity + "/"
+                + registrationId + "/"
                 + macAddress);
         InputStream apiSubscriptionRequestStream = null;
         try {

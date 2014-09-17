@@ -17,22 +17,26 @@ import com.measurence.sdk.android.demo.R;
 
 public class RegistrationUtil {
 
-    public static boolean checkRegistration(Context context) {
+    public static String getRegistrationId(Context context) {
         final String LOG_TAG = context.getString(R.string.log_prefix) + " "+RegistrationUtil.class.getSimpleName();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String registrationId = preferences.getString(context.getString(R.string.prop_reg_id), null);
         if (registrationId == null) {
-            return false;
+            return null;
         }
 
         int registeredVersion = preferences.getInt(context.getString(R.string.app_version), Integer.MIN_VALUE);
         int currentVersion = getAppVersion(context);
         if (registeredVersion != currentVersion) {
             Log.i(LOG_TAG, "App version changed.");
-            return false;
+            return null;
         }
 
-        return true;
+        return registrationId;
+    }
+
+    public static boolean checkRegistration(Context context) {
+        return getRegistrationId(context) != null;
     }
     public static int getAppVersion(Context context) {
         try {
