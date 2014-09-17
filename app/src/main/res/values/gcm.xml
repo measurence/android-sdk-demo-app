@@ -9,5 +9,5 @@
      are added to this path as the last path components -->
     <string name="partner_id">my_startup</string>
 
-    <string name="api_subscription_path" translatable="false">/api/apply_subscription_with_mac</string>
+    <string name="api_subscription_path" translatable="false">/api/android/apply_subscription</string>
 </resources>
