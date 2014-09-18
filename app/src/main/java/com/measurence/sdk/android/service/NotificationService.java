@@ -25,14 +25,29 @@ public class NotificationService extends IntentService {
         try {
             Bundle extras = intent.getExtras();
             GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
-
-            // We handle only MESSAGE_TYPE_MESSAGE intents
+            // The getMessageType() intent parameter must be the intent you received
+            // in your BroadcastReceiver.
             String messageType = gcm.getMessageType(intent);
-            if (messageType.equals(GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE)) {
-                // Unbundle message data
-                String jsonString = extras.getString(getString(R.string.notification_payload_key));
-                PresenceSessionUpdate presenceSessionUpdate = PresenceSessionUpdate.fromJson(jsonString);
-                Log.i(LOG_TAG, "presence session update|" + presenceSessionUpdate);
+
+            if (!extras.isEmpty()) {  // has effect of unparcelling Bundle
+            /*
+             * Filter messages based on message type. Since it is likely that GCM
+             * will be extended in the future with new message types, just ignore
+             * any message types you're not interested in, or that you don't
+             * recognize.
+             */
+                if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
+                    Log.i(LOG_TAG, "Send error: " + extras.toString());
+                } else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType)) {
+                    Log.i(LOG_TAG, "Deleted messages on server: " + extras.toString());
+                    // If it's a regular GCM message, do some work.
+                } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+                    String presenceSessionUpdateJson = extras.getString("user-session");
+                    Log.i(LOG_TAG, "received|json|" + presenceSessionUpdateJson);
+
+                    PresenceSessionUpdate presenceSessionUpdate = PresenceSessionUpdate.fromJson(presenceSessionUpdateJson);
+                    Log.i(LOG_TAG, "received|presence event" + presenceSessionUpdate);
+                }
             }
         } finally {
             // Release the wake lock provided by the WakefulBroadcastReceiver.
