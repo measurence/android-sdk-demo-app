@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,9 +42,15 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.measurence.sdk.android.PresenceSessionUpdate;
+import com.measurence.sdk.android.UserIdentity;
 import com.measurence.sdk.android.gcm_push_notifications.PresenceSessionUpdatesNotificationService;
 
+import junit.framework.TestCase;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A fragment representing a list of Items.
@@ -66,7 +73,7 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ArrayAdapter<String> mAdapter;
+    private ArrayAdapter<PresenceSessionUpdate> mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -79,14 +86,40 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<String>()) {
+        mAdapter = new ArrayAdapter<PresenceSessionUpdate>(getActivity(),
+                R.layout.list_item_notification, R.id.list_item_notification_view, new ArrayList<PresenceSessionUpdate>()) {
+
+            DateFormat dateFormat = DateFormat.getDateTimeInstance();
+            private void setText(View root, int id, String text) {
+                TextView textView = (TextView) root.findViewById(id);
+                textView.setText(text);
+            }
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View itemView = inflater.inflate(R.layout.list_item_notification, null);
+                PresenceSessionUpdate item = getItem(position);
+                // Not the best, we should have a notification date. WIP
+                String now = dateFormat.format(item.getInterval().getEnd());
+                setText(itemView, R.id.list_item_notification_date, now);
+                StringBuilder sb = new StringBuilder();
+                for (UserIdentity userid:item.getUserIdentities()) {
+                    sb.append(userid.getId()).append(" ");
+                }
+                setText(itemView, R.id.list_item_notification_userid, sb.toString());
+                setText(itemView, R.id.list_item_notification_storeid, item.getStoreKey());
+                setText(itemView, R.id.list_item_notification_new_user, getString(item.getIsNewVisitorInStore().booleanValue() ? R.string.yes:R.string.no));
+                setText(itemView, R.id.list_item_notification_status, item.getStatus());
+                setText(itemView, R.id.list_item_notification_session_start, dateFormat.format(item.getInterval().getStart()));
+                setText(itemView, R.id.list_item_notification_session_end, dateFormat.format(item.getInterval().getEnd()));
+                return itemView;
+            }
         };
 
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
             private void displaySessionUpdate(PresenceSessionUpdate presenceSessionUpdate) {
-                mAdapter.insert(presenceSessionUpdate.toString(), 0);
+                mAdapter.insert(presenceSessionUpdate, 0);
                 Log.i(LOG_TAG, "displaying session update|" + presenceSessionUpdate);
             }
 
