@@ -88,8 +88,6 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
             private void displaySessionUpdate(PresenceSessionUpdate presenceSessionUpdate) {
                 mAdapter.insert(presenceSessionUpdate.toString(), 0);
                 Log.i(LOG_TAG, "displaying session update|" + presenceSessionUpdate);
-//                ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), R.layout., sessionUpdatesList);
-//                sessionUpdatesListView.setAdapter(adapter1);
             }
 
             @Override
@@ -125,6 +123,7 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
     }
 
     /**

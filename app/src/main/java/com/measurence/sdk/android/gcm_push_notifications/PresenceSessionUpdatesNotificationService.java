@@ -25,8 +25,10 @@
 package com.measurence.sdk.android.gcm_push_notifications;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -56,6 +58,13 @@ public class PresenceSessionUpdatesNotificationService extends IntentService {
         Intent sessionUpdateNotificationIntent = new Intent(SESSION_UPDATE_INTENT_ID);
         sessionUpdateNotificationIntent.putExtra(SESSION_UPDATE_JSON_PARAMETER, presenceSessionUpdateJson);
         localBroadcastManager.sendBroadcast(sessionUpdateNotificationIntent);
+        Vibrator v = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+
+        v.vibrate(2000);
+
+        long pattern[]={0,400,200,200,800};
+        // 2nd argument is for repetition pass -1 if you do not want to repeat the Vibrate
+        v.vibrate(pattern,-1);
     }
 
     @Override
