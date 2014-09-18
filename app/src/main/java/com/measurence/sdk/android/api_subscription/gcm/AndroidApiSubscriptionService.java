@@ -1,4 +1,4 @@
-package com.measurence.sdk.android.registration;
+package com.measurence.sdk.android.api_subscription.gcm;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import com.measurence.sdk.android.api_subscriptions.AndroidPushSubscription;
 import com.measurence.sdk.android.api_subscriptions.AndroidPushSubscriptionException;
 import com.measurence.sdk.android.api_subscriptions.MeasurenceAPISubscriptions;
 import com.measurence.sdk.android.demo.R;
+import com.measurence.sdk.android.api_subscription.MeasurenceApiSubscriptionService;
 import com.measurence.sdk.android.util.DeviceMacAddress;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class AndroidApiSubscriptionService extends MeasurenceApiSubscriptionServ
 
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int appVersion = RegistrationUtil.getAppVersion(context);
+        int appVersion = GCMRegistrationIdUtil.getAppVersion(context);
         Log.i(LOG_TAG, "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(getString(R.string.prop_reg_id), regId);
@@ -51,7 +52,7 @@ public class AndroidApiSubscriptionService extends MeasurenceApiSubscriptionServ
     @Override
     protected void applyToSubscriptionAndNotifyResult(String user_identity) {
         try {
-            String registrationId = RegistrationUtil.getRegistrationId(getApplicationContext());
+            String registrationId = GCMRegistrationIdUtil.getRegistrationId(getApplicationContext());
             AndroidPushSubscription androidPushSubscription = new AndroidPushSubscription(
                     getMeasurencePartnerId(),
                     user_identity,

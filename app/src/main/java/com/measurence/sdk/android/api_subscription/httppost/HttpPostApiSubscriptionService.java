@@ -1,10 +1,11 @@
-package com.measurence.sdk.android.registration;
+package com.measurence.sdk.android.api_subscription.httppost;
 
 import android.util.Log;
 
 import com.measurence.sdk.android.api_subscriptions.HttpPostSubscription;
 import com.measurence.sdk.android.api_subscriptions.HttpPostSubscriptionException;
 import com.measurence.sdk.android.api_subscriptions.MeasurenceAPISubscriptions;
+import com.measurence.sdk.android.api_subscription.MeasurenceApiSubscriptionService;
 import com.measurence.sdk.android.util.DeviceMacAddress;
 
 public class HttpPostApiSubscriptionService extends MeasurenceApiSubscriptionService {

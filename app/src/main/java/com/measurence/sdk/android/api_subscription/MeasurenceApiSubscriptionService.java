@@ -1,4 +1,4 @@
-package com.measurence.sdk.android.registration;
+package com.measurence.sdk.android.api_subscription;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -14,7 +14,7 @@ public abstract class MeasurenceApiSubscriptionService extends IntentService {
 
     public static final String REGISTRATION_INTENT_USER_IDENTITY = "USER_IDENTITY";
 
-    MeasurenceAPISubscriptions measurenceAPISubscriptions = new MeasurenceAPISubscriptions();
+    protected MeasurenceAPISubscriptions measurenceAPISubscriptions = new MeasurenceAPISubscriptions();
 
     private LocalBroadcastManager localBroadcastManager;
 

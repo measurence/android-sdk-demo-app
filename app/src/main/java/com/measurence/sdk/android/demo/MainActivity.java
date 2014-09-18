@@ -17,15 +17,14 @@ import android.widget.ListView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.measurence.sdk.android.PresenceSessionUpdate;
-import com.measurence.sdk.android.registration.AndroidApiSubscriptionService;
-import com.measurence.sdk.android.registration.HttpPostApiSubscriptionService;
-import com.measurence.sdk.android.registration.MeasurenceApiSubscriptionService;
-import com.measurence.sdk.android.registration.RegistrationUtil;
-import com.measurence.sdk.android.service.NotificationService;
+import com.measurence.sdk.android.api_subscription.gcm.AndroidApiSubscriptionService;
+import com.measurence.sdk.android.api_subscription.gcm.GCMRegistrationIdUtil;
+import com.measurence.sdk.android.api_subscription.httppost.HttpPostApiSubscriptionService;
+import com.measurence.sdk.android.api_subscription.MeasurenceApiSubscriptionService;
+import com.measurence.sdk.android.gcm_push_notifications.PresenceSessionUpdatesNotificationService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class MainActivity extends Activity {
 
@@ -75,7 +74,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                String presenceSessionUpdateJson = intent.getStringExtra(NotificationService.SESSION_UPDATE_JSON_PARAMETER);
+                String presenceSessionUpdateJson = intent.getStringExtra(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_JSON_PARAMETER);
                 displaySessionUpdate(PresenceSessionUpdate.fromJson(presenceSessionUpdateJson));
             }
         };
@@ -85,7 +84,7 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
 
-        LocalBroadcastManager.getInstance(this).registerReceiver((sessionUpdatesBroadcastReceiver), new IntentFilter(NotificationService.SESSION_UPDATE_INTENT_ID));
+        LocalBroadcastManager.getInstance(this).registerReceiver((sessionUpdatesBroadcastReceiver), new IntentFilter(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_INTENT_ID));
         LocalBroadcastManager.getInstance(this).registerReceiver((subscriptionResultBroadcastReceiver), new IntentFilter(MeasurenceApiSubscriptionService.SUBSCRIPTION_RESULT_INTENT_ID));
     }
 
@@ -117,7 +116,7 @@ public class MainActivity extends Activity {
 
     private String getIdentityOfAppUser() {
         // Put here the logic which return the identity of the user of your APP (e.g. an email)
-        return UUID.randomUUID().toString();
+        return getString(R.string.user_identity);
     }
 
     @Override
@@ -151,7 +150,7 @@ public class MainActivity extends Activity {
         if (!playAvailable) {
             return;
         }
-        boolean isRegistered = RegistrationUtil.checkRegistration(this);
+        boolean isRegistered = GCMRegistrationIdUtil.checkRegistration(this);
         if (!isRegistered) {
 
             Intent registrationIntent = new Intent(this, MeasurenceApiSubscriptionService.class);

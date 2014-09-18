@@ -1,4 +1,4 @@
-package com.measurence.sdk.android.service;
+package com.measurence.sdk.android.gcm_push_notifications;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -8,16 +8,16 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
-public class NotificationService extends IntentService {
+public class PresenceSessionUpdatesNotificationService extends IntentService {
 
-    private final String LOG_TAG = "Measurence "+NotificationService.class.getSimpleName();
+    private final String LOG_TAG = "Measurence "+PresenceSessionUpdatesNotificationService.class.getSimpleName();
 
     public static final String SESSION_UPDATE_INTENT_ID = "SESSION_UPDATE";
     public static final String SESSION_UPDATE_JSON_PARAMETER = "SESSION_JSON";
 
     private LocalBroadcastManager localBroadcastManager;
 
-    public NotificationService() {
+    public PresenceSessionUpdatesNotificationService() {
         super("NotificationService");
     }
 
@@ -64,7 +64,7 @@ public class NotificationService extends IntentService {
         } finally {
             // Release the wake lock provided by the WakefulBroadcastReceiver.
             // The device is no longer prevented from sleeping
-            GcmBroadcastReceiver.completeWakefulIntent(intent);
+            GcmPushNotificationsReceiver.completeWakefulIntent(intent);
         }
     }
 

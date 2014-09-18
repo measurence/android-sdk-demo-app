@@ -33,7 +33,7 @@
         </activity>
 
         <receiver
-            android:name="com.measurence.sdk.android.service.GcmBroadcastReceiver"
+            android:name="com.measurence.sdk.android.gcm_push_notifications.GcmPushNotificationsReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -42,9 +42,13 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.measurence.sdk.android.service.NotificationService" />
+        <service android:name="com.measurence.sdk.android.gcm_push_notifications.PresenceSessionUpdatesNotificationService" />
         <service
-            android:name="com.measurence.sdk.android.registration.MeasurenceApiSubscriptionService"
+            android:name="com.measurence.sdk.android.api_subscription.gcm.AndroidApiSubscriptionService"
+            android:exported="false" >
+        </service>
+        <service
+            android:name="com.measurence.sdk.android.api_subscription.httppost.HttpPostApiSubscriptionService"
             android:exported="false" >
         </service>
     </application>

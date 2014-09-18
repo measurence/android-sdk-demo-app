@@ -1,4 +1,4 @@
-package com.measurence.sdk.android.registration;
+package com.measurence.sdk.android.api_subscription.gcm;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,16 +9,10 @@ import android.util.Log;
 
 import com.measurence.sdk.android.demo.R;
 
-
-/**
- * Checks that there is a registration id saved in preferences
- * Created by chiara on 17/09/2014.
- */
-
-public class RegistrationUtil {
+public class GCMRegistrationIdUtil {
 
     public static String getRegistrationId(Context context) {
-        final String LOG_TAG = context.getString(R.string.log_prefix) + " "+RegistrationUtil.class.getSimpleName();
+        final String LOG_TAG = context.getString(R.string.log_prefix) + " "+GCMRegistrationIdUtil.class.getSimpleName();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String registrationId = preferences.getString(context.getString(R.string.prop_reg_id), null);
         if (registrationId == null) {
