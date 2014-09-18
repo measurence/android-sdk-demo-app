@@ -2,12 +2,8 @@
 <resources>
     <string name="SENDER_ID" translatable="false">1093814696074</string>
     <string name="PLAY_SERVICES_RESOLUTION_REQUEST" translatable="false">9000</string>
-    <string name="api_subscription_host" translatable="false">api.us-east-1.measurence.com</string>
-    <string name="api_subscription_port" translatable="false">80</string>
     <!--
      partner_id, user_identity and macaddress
      are added to this path as the last path components -->
     <string name="partner_id">my_startup</string>
-
-    <string name="api_subscription_path" translatable="false">/api/android/apply_subscription</string>
 </resources>

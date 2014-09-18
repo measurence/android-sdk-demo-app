@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.measurence.sdk.android.PresenceSessionUpdate;
 import com.measurence.sdk.android.demo.R;
 
 import org.json.JSONException;
@@ -30,13 +31,9 @@ public class NotificationService extends IntentService {
             if (messageType.equals(GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE)) {
                 // Unbundle message data
                 String jsonString = extras.getString(getString(R.string.notification_payload_key));
-                JSONObject data = new JSONObject(jsonString);
-                // Todo: unpack in a domain object
-                // TODO: start app if it's not running (or popup message/vibra etc) and update UI
-
+                PresenceSessionUpdate presenceSessionUpdate = PresenceSessionUpdate.fromJson(jsonString);
+                Log.i(LOG_TAG, "presence session update|" + presenceSessionUpdate);
             }
-        } catch (JSONException exc) {
-            Log.e(LOG_TAG, "Error while parsing payload", exc);
         } finally {
             // Release the wake lock provided by the WakefulBroadcastReceiver.
             // The device is no longer prevented from sleeping

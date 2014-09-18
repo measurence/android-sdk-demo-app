@@ -26,18 +26,16 @@ android {
 repositories {
     mavenCentral()
     maven {
-        url "http://repo.spray.io"
-    }
-    ivy {
-        ivyPattern System.getProperty("user.home") + "/.ivy2/local/[organisation]/[module]/[revision]/ivys/ivy.xml"
-        artifactPattern System.getProperty("user.home") + "/.ivy2/local/[organisation]/[module]/[revision]/jars/[module].[ext]"
+        url "file:///" + System.getProperty("user.home") + "/.m2/repository/"
+        artifactUrls mavenLocal()
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.google.android.gms:play-services:3.1.+"
-    compile 'commons-io:commons-io:2.4'
     compile 'com.android.support:support-v4:20.0.0'
-    compile 'com.measurence:android-sdk:0.0.6@aar'
+    compile 'commons-io:commons-io:2.4'
+    compile 'com.google.code.gson:gson:2.3'
+    compile 'com.measurence:android-sdk:0.0.8@aar'
 }

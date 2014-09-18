@@ -4,22 +4,17 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.measurence.sdk.android.api_subscriptions.AndroidPushSubscription;
+import com.measurence.sdk.android.api_subscriptions.AndroidPushSubscriptionException;
+import com.measurence.sdk.android.api_subscriptions.MeasurenceAPISubscriptions;
 import com.measurence.sdk.android.demo.R;
-
-import org.apache.commons.io.IOUtils;
+import com.measurence.sdk.android.util.DeviceMacAddress;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 
 /**
  * This service register the device with the server. Does not check first if there is a registration id
@@ -27,6 +22,7 @@ import java.net.URI;
  */
 public class RegistrationService extends IntentService {
 
+    MeasurenceAPISubscriptions measurenceAPISubscriptions = new MeasurenceAPISubscriptions();
     private String LOG_TAG = "Measurence " + RegistrationService.class.getSimpleName();
 
     public RegistrationService() {
@@ -79,38 +75,20 @@ public class RegistrationService extends IntentService {
         Log.i(LOG_TAG, "apply to api subscription|enabled|" + applyToSubscriptionEnabled);
         if (!applyToSubscriptionEnabled) return;
 
-        String apiSubscriptionsRegistryHost = getString(R.string.api_subscription_host);
-        int  apiSubscriptionsRegistryPort = Integer.parseInt(getString(R.string.api_subscription_port));
-        String apiSubscriptionRegistryPath = getString(R.string.api_subscription_path);
         String partnerId = getString(R.string.partner_id);
-
-        WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        String macAddress = wifiInfo.getMacAddress().replace(":", "");
-
         String registrationId = RegistrationUtil.getRegistrationId(getApplicationContext());
 
-        //Log.i(TAG, "mac|" + macAddress + "|registration id|" + registrationId);
-        // TODO: use Uri.builder with port. Add partner identity from gcm config
-        // and user_identity as param
-        // todo: add registration id
-        // https://bitbucket.org/measurence/svc-api-subscription#markdown-header-svc-api-subscription-public-end-points
-        URI apiSubscriptionURI = URI.create("http://" + apiSubscriptionsRegistryHost + ":"
-                + apiSubscriptionsRegistryPort
-                + apiSubscriptionRegistryPath + "/"
-                + partnerId + "/"
-                + user_identity + "/"
-                + registrationId + "/"
-                + macAddress);
-        InputStream apiSubscriptionRequestStream = null;
+        AndroidPushSubscription androidPushSubscription = new AndroidPushSubscription(
+                partnerId,
+                user_identity,
+                registrationId,
+                DeviceMacAddress.get(this)
+        );
         try {
-            apiSubscriptionRequestStream = apiSubscriptionURI.toURL().openStream();
-            String result = IOUtils.toString(apiSubscriptionRequestStream);
-            Log.i(LOG_TAG, "api subscription result|" + result);
-        } catch (IOException e) {
+            MeasurenceAPISubscriptions.SubscriptionResult subscriptionResult = measurenceAPISubscriptions.applyToAndroidPushNotification(androidPushSubscription);
+            Log.i(LOG_TAG, "api subscription result|" + subscriptionResult);
+        } catch (AndroidPushSubscriptionException e) {
             e.printStackTrace();
-        } finally {
-            IOUtils.closeQuietly(apiSubscriptionRequestStream);
         }
     }
 }
