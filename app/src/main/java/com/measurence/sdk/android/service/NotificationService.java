@@ -3,21 +3,35 @@ package com.measurence.sdk.android.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.measurence.sdk.android.PresenceSessionUpdate;
-import com.measurence.sdk.android.demo.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class NotificationService extends IntentService {
 
     private final String LOG_TAG = "Measurence "+NotificationService.class.getSimpleName();
 
+    public static final String SESSION_UPDATE_INTENT_ID = "SESSION_UPDATE";
+    public static final String SESSION_UPDATE_JSON_PARAMETER = "SESSION_JSON";
+
+    private LocalBroadcastManager localBroadcastManager;
+
     public NotificationService() {
         super("NotificationService");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+    }
+
+    private void notifySessionUpdateToUI(String presenceSessionUpdateJson) {
+        Intent sessionUpdateNotificationIntent = new Intent(SESSION_UPDATE_INTENT_ID);
+        sessionUpdateNotificationIntent.putExtra(SESSION_UPDATE_JSON_PARAMETER, presenceSessionUpdateJson);
+        localBroadcastManager.sendBroadcast(sessionUpdateNotificationIntent);
     }
 
     @Override
@@ -44,9 +58,7 @@ public class NotificationService extends IntentService {
                 } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                     String presenceSessionUpdateJson = extras.getString("user-session");
                     Log.i(LOG_TAG, "received|json|" + presenceSessionUpdateJson);
-
-                    PresenceSessionUpdate presenceSessionUpdate = PresenceSessionUpdate.fromJson(presenceSessionUpdateJson);
-                    Log.i(LOG_TAG, "received|presence event" + presenceSessionUpdate);
+                    notifySessionUpdateToUI(presenceSessionUpdateJson);
                 }
             }
         } finally {
