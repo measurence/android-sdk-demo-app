@@ -62,7 +62,7 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
             private void displaySessionUpdate(PresenceSessionUpdate presenceSessionUpdate) {
-                mAdapter.add(presenceSessionUpdate.toString());
+                mAdapter.insert(presenceSessionUpdate.toString(), 0);
                 Log.i(LOG_TAG, "displaying session update|" + presenceSessionUpdate);
 //                ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), R.layout., sessionUpdatesList);
 //                sessionUpdatesListView.setAdapter(adapter1);
