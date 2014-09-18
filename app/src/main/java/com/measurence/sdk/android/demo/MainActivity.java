@@ -17,12 +17,15 @@ import android.widget.ListView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.measurence.sdk.android.PresenceSessionUpdate;
-import com.measurence.sdk.android.registration.RegistrationService;
+import com.measurence.sdk.android.registration.AndroidApiSubscriptionService;
+import com.measurence.sdk.android.registration.HttpPostApiSubscriptionService;
+import com.measurence.sdk.android.registration.MeasurenceApiSubscriptionService;
 import com.measurence.sdk.android.registration.RegistrationUtil;
 import com.measurence.sdk.android.service.NotificationService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MainActivity extends Activity {
 
@@ -37,7 +40,8 @@ public class MainActivity extends Activity {
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {}
+            public void onClick(DialogInterface dialog, int which) {
+            }
         });
         AlertDialog alert = builder.create();
         alert.show();
@@ -54,7 +58,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                String subscriptionResultMessage = intent.getStringExtra(RegistrationService.SUBSCRIPTION_RESULT_MESSAGE);
+                String subscriptionResultMessage = intent.getStringExtra(MeasurenceApiSubscriptionService.SUBSCRIPTION_RESULT_INTENT_MESSAGE);
                 displaySubscriptionResultMessage(subscriptionResultMessage);
             }
         };
@@ -82,7 +86,7 @@ public class MainActivity extends Activity {
         super.onStart();
 
         LocalBroadcastManager.getInstance(this).registerReceiver((sessionUpdatesBroadcastReceiver), new IntentFilter(NotificationService.SESSION_UPDATE_INTENT_ID));
-        LocalBroadcastManager.getInstance(this).registerReceiver((subscriptionResultBroadcastReceiver), new IntentFilter(RegistrationService.SUBSCRIPTION_RESULT_INTENT_ID));
+        LocalBroadcastManager.getInstance(this).registerReceiver((subscriptionResultBroadcastReceiver), new IntentFilter(MeasurenceApiSubscriptionService.SUBSCRIPTION_RESULT_INTENT_ID));
     }
 
     @Override
@@ -107,20 +111,30 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.demo, menu);
         return true;
+    }
+
+    private String getIdentityOfAppUser() {
+        // Put here the logic which return the identity of the user of your APP (e.g. an email)
+        return UUID.randomUUID().toString();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            // TODO: create force registration menu and settings menu
-            Log.v(LOG_TAG, "Force registration");
-            Intent registrationIntent = new Intent(this, RegistrationService.class);
-            registrationIntent.putExtra("user_id", "random_value");
+        if (id == R.id.force_subscription_to_android_apis) {
+            Log.v(LOG_TAG, "force_subscription_to_android_apis");
+            Intent registrationIntent = new Intent(this, AndroidApiSubscriptionService.class);
+            registrationIntent.putExtra(MeasurenceApiSubscriptionService.REGISTRATION_INTENT_USER_IDENTITY, getIdentityOfAppUser());
+            startService(registrationIntent);
+        }
+
+        if (id == R.id.force_subscription_to_http_apis) {
+            Log.v(LOG_TAG, "force_subscription_to_http_apis");
+            Intent registrationIntent = new Intent(this, HttpPostApiSubscriptionService.class);
+            registrationIntent.putExtra(MeasurenceApiSubscriptionService.REGISTRATION_INTENT_USER_IDENTITY, getIdentityOfAppUser());
             startService(registrationIntent);
         }
 
@@ -140,7 +154,7 @@ public class MainActivity extends Activity {
         boolean isRegistered = RegistrationUtil.checkRegistration(this);
         if (!isRegistered) {
 
-            Intent registrationIntent = new Intent(this, RegistrationService.class);
+            Intent registrationIntent = new Intent(this, MeasurenceApiSubscriptionService.class);
             // TODO
             registrationIntent.putExtra("user_id", "random_value");
             startService(registrationIntent);

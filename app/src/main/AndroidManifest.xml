@@ -44,7 +44,7 @@
 
         <service android:name="com.measurence.sdk.android.service.NotificationService" />
         <service
-            android:name="com.measurence.sdk.android.registration.RegistrationService"
+            android:name="com.measurence.sdk.android.registration.MeasurenceApiSubscriptionService"
             android:exported="false" >
         </service>
     </application>

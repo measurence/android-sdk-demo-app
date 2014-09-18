@@ -5,7 +5,8 @@
     <string name="app_version">0.1-SNAPSHOT</string>
 
     <string name="app_name">Measurence Android SDK Demo</string>
-    <string name="action_settings">Force Subscription to APIs</string>
+    <string name="force_subscription_to_android_apis">Force Subscription to Android APIs</string>
+    <string name="force_subscription_to_http_apis">Force Subscription to HTTP APIs</string>
     <string name="welcome_message">Welcome to Measurence Android SDK demo</string>
 
     <!-- Prefix used in logging -->

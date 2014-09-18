@@ -38,6 +38,7 @@ public class RegistrationUtil {
     public static boolean checkRegistration(Context context) {
         return getRegistrationId(context) != null;
     }
+
     public static int getAppVersion(Context context) {
         try {
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
