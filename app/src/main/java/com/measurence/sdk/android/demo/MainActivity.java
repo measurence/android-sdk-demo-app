@@ -44,17 +44,11 @@ import com.measurence.sdk.android.api_subscription.gcm.AndroidApiSubscriptionSer
 import com.measurence.sdk.android.api_subscription.gcm.GCMRegistrationIdUtil;
 import com.measurence.sdk.android.api_subscription.httppost.HttpPostApiSubscriptionService;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainActivity extends ActionBarActivity {
 
     private final String LOG_TAG = "Measurence "+MainActivity.class.getSimpleName();
 
-    private BroadcastReceiver sessionUpdatesBroadcastReceiver;
     private BroadcastReceiver subscriptionResultBroadcastReceiver;
-
-    private List<String> sessionUpdatesList = new ArrayList<String>();
 
     private void displaySubscriptionResultMessage(String message)
     {
