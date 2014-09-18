@@ -14,4 +14,7 @@
     <string name="welcome_message">Welcome to Measurence Android SDK demo</string>
     <string name="ok">OK</string>
 
+    <string name="notifications_empty_text">Your notifications will appear here</string>
+
+
 </resources>

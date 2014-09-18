@@ -1,6 +1,5 @@
 package com.measurence.sdk.android.demo;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,17 +16,16 @@ import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.measurence.sdk.android.PresenceSessionUpdate;
+import com.measurence.sdk.android.api_subscription.MeasurenceApiSubscriptionService;
 import com.measurence.sdk.android.api_subscription.gcm.AndroidApiSubscriptionService;
 import com.measurence.sdk.android.api_subscription.gcm.GCMRegistrationIdUtil;
 import com.measurence.sdk.android.api_subscription.httppost.HttpPostApiSubscriptionService;
-import com.measurence.sdk.android.api_subscription.MeasurenceApiSubscriptionService;
 import com.measurence.sdk.android.gcm_push_notifications.PresenceSessionUpdatesNotificationService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     private final String LOG_TAG = "Measurence "+MainActivity.class.getSimpleName();
 
@@ -51,31 +50,20 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new NotificationsFragment())
+                    .commit();
+        }
         checkRegistration();
-
         subscriptionResultBroadcastReceiver = new BroadcastReceiver() {
+
+
 
             @Override
             public void onReceive(Context context, Intent intent) {
                 String subscriptionResultMessage = intent.getStringExtra(MeasurenceApiSubscriptionService.SUBSCRIPTION_RESULT_INTENT_MESSAGE);
                 displaySubscriptionResultMessage(subscriptionResultMessage);
-            }
-        };
-
-        sessionUpdatesBroadcastReceiver = new BroadcastReceiver() {
-
-            private void displaySessionUpdate(PresenceSessionUpdate presenceSessionUpdate) {
-                ListView sessionUpdatesListView = (ListView) findViewById(R.id.sessionUpdatesListView);
-                sessionUpdatesList.add(0, presenceSessionUpdate.toString());
-                Log.i(LOG_TAG, "displaying session update|" + presenceSessionUpdate);
-//                ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), R.layout., sessionUpdatesList);
-//                sessionUpdatesListView.setAdapter(adapter1);
-            }
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String presenceSessionUpdateJson = intent.getStringExtra(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_JSON_PARAMETER);
-                displaySessionUpdate(PresenceSessionUpdate.fromJson(presenceSessionUpdateJson));
             }
         };
     }
@@ -84,7 +72,6 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
 
-        LocalBroadcastManager.getInstance(this).registerReceiver((sessionUpdatesBroadcastReceiver), new IntentFilter(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_INTENT_ID));
         LocalBroadcastManager.getInstance(this).registerReceiver((subscriptionResultBroadcastReceiver), new IntentFilter(MeasurenceApiSubscriptionService.SUBSCRIPTION_RESULT_INTENT_ID));
     }
 
@@ -101,12 +88,11 @@ public class MainActivity extends Activity {
             } else {
                 Log.i(LOG_TAG, "This device is not supported.");
                 finish();
-            }
+        }
             return false;
         }
         return true;
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -159,4 +145,6 @@ public class MainActivity extends Activity {
             startService(registrationIntent);
         }
     }
+
+
 }
