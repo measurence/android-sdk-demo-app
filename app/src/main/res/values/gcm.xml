@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="PLAY_SERVICES_RESOLUTION_REQUEST" translatable="false">9000</string>
+
+    <string name="GOOGLE_CLOUD_MESSAGING_PROJECT_NUMBER" translatable="false">1093814696074</string>
+    <string name="MEASURENCE_PARTNER_ID" translatable="false">my_startup</string>
+</resources>

@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Measurence Android SDK Demo</string>
-    <string name="hello_world">Measurence Android SDK Demo is running</string>
-    <string name="action_settings">Settings</string>
+    <string name="prop_reg_id">registration_id</string>
+    <string name="log_prefix" translatable="false">Measurence SDK</string>
+
+    <string name="app_name">Measurence SDK Demo</string>
+    <string name="app_version">0.1-SNAPSHOT</string>
+
+    <string name="user_identity">user@example.com</string>
+
+    <string name="force_subscription_to_android_apis">Subscribe to Android APIs</string>
+    <string name="force_subscription_to_http_apis">Subscribe to HTTP APIs</string>
+    <string name="welcome_message">Welcome to Measurence Android SDK demo</string>
+    <string name="ok">OK</string>
+
+    <string name="notifications_empty_text">Your notifications will appear here</string>
+
 
 </resources>
