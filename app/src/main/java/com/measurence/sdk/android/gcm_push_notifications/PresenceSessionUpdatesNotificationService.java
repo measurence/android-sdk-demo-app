@@ -25,14 +25,21 @@
 package com.measurence.sdk.android.gcm_push_notifications;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.measurence.sdk.android.PresenceSessionUpdate;
+import com.measurence.sdk.android.demo.MainActivity;
+import com.measurence.sdk.android.demo.R;
 
 public class PresenceSessionUpdatesNotificationService extends IntentService {
 
@@ -54,10 +61,43 @@ public class PresenceSessionUpdatesNotificationService extends IntentService {
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
+
+    private void sendNotification(String user, String store, String status) {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.exclamation)
+                        .setContentTitle(user)
+                        .setContentText(store + ": " + status);
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(1, mBuilder.build());
+    }
+
     private void notifySessionUpdateToUI(String presenceSessionUpdateJson) {
         Intent sessionUpdateNotificationIntent = new Intent(SESSION_UPDATE_INTENT_ID);
         sessionUpdateNotificationIntent.putExtra(SESSION_UPDATE_JSON_PARAMETER, presenceSessionUpdateJson);
         localBroadcastManager.sendBroadcast(sessionUpdateNotificationIntent);
+        PresenceSessionUpdate update = PresenceSessionUpdate.fromJson(presenceSessionUpdateJson);
+        sendNotification(update.getUserIdentities().get(0).getId(), update.getStoreKey(), update.getStatus());
         Vibrator v = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 
         v.vibrate(2000);
@@ -92,6 +132,7 @@ public class PresenceSessionUpdatesNotificationService extends IntentService {
                     String presenceSessionUpdateJson = extras.getString("user-session");
                     Log.i(LOG_TAG, "received|json|" + presenceSessionUpdateJson);
                     notifySessionUpdateToUI(presenceSessionUpdateJson);
+
                 }
             }
         } finally {

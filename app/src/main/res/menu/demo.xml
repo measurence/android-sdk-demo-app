@@ -1,13 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".DemoActivity" >
     <item android:id="@+id/force_subscription_to_android_apis"
         android:title="@string/force_subscription_to_android_apis"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
+        app:showAsAction="never" />
 
     <item android:id="@+id/force_subscription_to_http_apis"
           android:title="@string/force_subscription_to_http_apis"
-          android:orderInCategory="100"
-          android:showAsAction="never" />
+          app:showAsAction="never"/>
 </menu>

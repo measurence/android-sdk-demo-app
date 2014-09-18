@@ -33,6 +33,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -85,7 +86,7 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setHasOptionsMenu(true);
         mAdapter = new ArrayAdapter<PresenceSessionUpdate>(getActivity(),
                 R.layout.list_item_notification, R.id.list_item_notification_view, new ArrayList<PresenceSessionUpdate>()) {
 
@@ -126,10 +127,22 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
             @Override
             public void onReceive(Context context, Intent intent) {
                 String presenceSessionUpdateJson = intent.getStringExtra(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_JSON_PARAMETER);
+
                 displaySessionUpdate(PresenceSessionUpdate.fromJson(presenceSessionUpdateJson));
+
             }
         };
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver((broadcastReceiver), new IntentFilter(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_INTENT_ID));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_clear) {
+            mAdapter.clear();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+
     }
 
     @Override
