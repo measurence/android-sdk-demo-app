@@ -39,4 +39,5 @@ dependencies {
     compile "com.google.android.gms:play-services:3.1.+"
     compile 'commons-io:commons-io:2.4'
     compile 'com.android.support:support-v4:20.0.0'
+    compile 'com.measurence:android-sdk:0.0.6@aar'
 }
