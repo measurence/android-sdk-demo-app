@@ -1,10 +1,13 @@
 package com.measurence.sdk.android.registration;
 
+import android.app.AlertDialog;
 import android.app.IntentService;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -22,11 +25,29 @@ import java.io.IOException;
  */
 public class RegistrationService extends IntentService {
 
+    public static final String SUBSCRIPTION_RESULT_INTENT_ID = "SUBSCRIPTION_RESULT";
+    public static final String SUBSCRIPTION_RESULT_MESSAGE = "SUBSCRIPTION_RESULT_MESSAGE";
+
     MeasurenceAPISubscriptions measurenceAPISubscriptions = new MeasurenceAPISubscriptions();
     private String LOG_TAG = "Measurence " + RegistrationService.class.getSimpleName();
 
+    private LocalBroadcastManager localBroadcastManager;
+
     public RegistrationService() {
         super("RegistrationService");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+    }
+
+    private void notifySubscriptionResult(String subscriptionResultMessage) {
+        Intent subscriptionResultIntent = new Intent(SUBSCRIPTION_RESULT_INTENT_ID);
+        subscriptionResultIntent.putExtra(SUBSCRIPTION_RESULT_MESSAGE, subscriptionResultMessage);
+        localBroadcastManager.sendBroadcast(subscriptionResultIntent);
     }
 
     @Override
@@ -63,11 +84,6 @@ public class RegistrationService extends IntentService {
         editor.apply();
     }
 
-
-    private void applyToServerSubscription(String user_identity) {
-        // TODO. Possiamo anche avere un bottone per usare questo endpoint
-    }
-
     private void applyToApiSubscription(String user_identity) {
         // Only for debugging purpouses
 
@@ -87,7 +103,9 @@ public class RegistrationService extends IntentService {
         try {
             MeasurenceAPISubscriptions.SubscriptionResult subscriptionResult = measurenceAPISubscriptions.applyToAndroidPushNotification(androidPushSubscription);
             Log.i(LOG_TAG, "api subscription result|" + subscriptionResult);
+            notifySubscriptionResult("Subscription succeeded. Outcome: \"" + subscriptionResult + "\"");
         } catch (AndroidPushSubscriptionException e) {
+            notifySubscriptionResult("Subscription failed. Error: \"" + e.getMessage() + "\"");
             e.printStackTrace();
         }
     }

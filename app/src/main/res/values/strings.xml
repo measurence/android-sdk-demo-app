@@ -5,7 +5,7 @@
     <string name="app_version">0.1-SNAPSHOT</string>
 
     <string name="app_name">Measurence Android SDK Demo</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Force Subscription to APIs</string>
     <string name="welcome_message">Welcome to Measurence Android SDK demo</string>
 
     <!-- Prefix used in logging -->
@@ -13,5 +13,7 @@
 
     <!-- Intent extra key that contains the payload -->
     <string name="notification_payload_key" translatable="false">data</string>
+
+    <string name="ok">OK</string>
 
 </resources>

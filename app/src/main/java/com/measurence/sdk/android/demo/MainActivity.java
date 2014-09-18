@@ -1,8 +1,10 @@
 package com.measurence.sdk.android.demo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -10,7 +12,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -27,9 +28,20 @@ public class MainActivity extends Activity {
 
     private final String LOG_TAG = "Measurence "+MainActivity.class.getSimpleName();
 
-    private BroadcastReceiver broadcastReceiver;
+    private BroadcastReceiver sessionUpdatesBroadcastReceiver;
+    private BroadcastReceiver subscriptionResultBroadcastReceiver;
 
     private List<String> sessionUpdatesList = new ArrayList<String>();
+
+    private void displaySubscriptionResultMessage(String message)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {}
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +50,16 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_demo);
         checkRegistration();
 
-        broadcastReceiver = new BroadcastReceiver() {
+        subscriptionResultBroadcastReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String subscriptionResultMessage = intent.getStringExtra(RegistrationService.SUBSCRIPTION_RESULT_MESSAGE);
+                displaySubscriptionResultMessage(subscriptionResultMessage);
+            }
+        };
+
+        sessionUpdatesBroadcastReceiver = new BroadcastReceiver() {
 
             private void displaySessionUpdate(PresenceSessionUpdate presenceSessionUpdate) {
                 ListView sessionUpdatesListView = (ListView) findViewById(R.id.sessionUpdatesListView);
@@ -60,7 +81,8 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
 
-        LocalBroadcastManager.getInstance(this).registerReceiver((broadcastReceiver), new IntentFilter(NotificationService.SESSION_UPDATE_INTENT_ID));
+        LocalBroadcastManager.getInstance(this).registerReceiver((sessionUpdatesBroadcastReceiver), new IntentFilter(NotificationService.SESSION_UPDATE_INTENT_ID));
+        LocalBroadcastManager.getInstance(this).registerReceiver((subscriptionResultBroadcastReceiver), new IntentFilter(RegistrationService.SUBSCRIPTION_RESULT_INTENT_ID));
     }
 
     @Override
@@ -92,6 +114,7 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             // TODO: create force registration menu and settings menu
