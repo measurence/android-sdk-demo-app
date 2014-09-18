@@ -8,6 +8,9 @@
     <string name="action_settings">Settings</string>
     <string name="welcome_message">Welcome to Measurence Android SDK demo</string>
 
+
+    <string name="notifications_empty_text">Your notifications will appear here</string>
+
     <!-- Prefix used in logging -->
     <string name="log_prefix" translatable="false">Measurence SDK</string>
 
