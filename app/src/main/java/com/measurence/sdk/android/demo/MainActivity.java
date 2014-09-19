@@ -25,6 +25,7 @@
 package com.measurence.sdk.android.demo;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -221,6 +222,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(PresenceSessionUpdatesNotificationService.NOTIFICATION_ID);
     }
 
     private void checkRegistration() {

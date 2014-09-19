@@ -48,6 +48,8 @@ public class PresenceSessionUpdatesNotificationService extends IntentService {
     public static final String SESSION_UPDATE_INTENT_ID = "SESSION_UPDATE";
     public static final String SESSION_UPDATE_JSON_PARAMETER = "SESSION_JSON";
 
+    public static final int NOTIFICATION_ID = 111;
+
     private LocalBroadcastManager localBroadcastManager;
 
     public PresenceSessionUpdatesNotificationService() {
@@ -89,7 +91,7 @@ public class PresenceSessionUpdatesNotificationService extends IntentService {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
-        mNotificationManager.notify(1, mBuilder.build());
+        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
     private void notifySessionUpdateToUI(String presenceSessionUpdateJson) {
