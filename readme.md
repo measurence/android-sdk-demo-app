@@ -25,4 +25,52 @@ The Measurence API Platform is currently intended to serve 3 use cases:
 
 The Android SDK is intended to be embedded in an Android mobile app in order to implement the related use cases (see previous Sections).
 
-The Measurence Android SDK Demo App 
+The Measurence Android SDK Demo App is a reference implementation which showcases how to use the SDK in order to subscribe to the presence events, and to listen to the GCM push notifications sent by the Measurence platform.
+
+# Measurence API Platform: definitions
+
+A `Session` is a time window of permanence of a device within a location monitored by the Measurence sensors.
+
+A `Session update` is an update of a Session which carries information such as:
+
+* the anonymized device mac address
+* the time window of permanence
+* the (Measurence defined) identifier of the location where the session occurred
+* whether the update is about a _new_ session, an _existing_ session (which is extended in time), or an _ended_ session
+* whether it is the first time this device has been seen in the venue
+* possibly, a list of "user identities" (e.g. an email) associated to the device
+
+A `Measurence Partner` is an organization with whom Measurence has signed an agreement to share the "session update" of a subset the captured devices (or all the devices). Each partner is assigned a "Partner Id", which is registered into the Measurence Back Office system.
+
+# Measurence API Platform: subscription flow
+
+A partner is assigned a partner id, and is registered into the Measurence Back Office. Please contact the Measurence personnel; Measurence email is info@measurence.com.
+
+## Configure the demo app
+
+### GCM Push notifications
+1. Put the Partner Id provided by Measurence in `measurence-android-sdk-demo-app\app\src\main\res\values\gcm.xml`, by overwriting value `MEASURENCE_PARTNER_ID`
+1. Provide to Measurence the `GCM API Key` of its Google Api Project
+    * see http://developer.android.com/google/gcm/gs.html in order to understand how to obtain and API Key
+1. Get a Project Number for its Google Api Project (see http://developer.android.com/google/gcm/gs.html)
+1. Configure the app by putting the Project Number in `measurence-android-sdk-demo-app\app\src\main\res\values\gcm.xml`, by overwriting value `GOOGLE_CLOUD_MESSAGING_PROJECT_NUMBER`
+
+### HTTP Post notifications at partners' Back End servers
+
+1. If you are planning to receive notifications at your own servers (via an HTTP Post), you have to provide to Measurence a suitable URL
+
+## Configure the demo app: User Identity (mandatory)
+
+The Measurence APIs requires a "User Identity" to be passed: this is intended to be the user name of the user of the app (e.g. an email).
+
+For the Demo app to work, just put your email into `measurence-android-sdk-demo-app\app\src\main\res\values\strings.xml`, by overwriting value `user_identity`.
+
+## Running the Demo App
+
+You may want to import the project in [Android Studio](https://developer.android.com/sdk/installing/studio.html), and execute it in your device.
+
+Then, you can choose from the app menu a suitable subscription action:
+
+* if you choose to subscribe to GCM notifications, the app will then be filled with upcoming Session Updates (even if in background)
+* if you choose to subscribe to HTTP Post notifications, your Back End servers will receive Session Updates
+* note that you may want to subscribe to both
