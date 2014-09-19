@@ -66,10 +66,6 @@ import java.util.Date;
 public class NotificationsFragment extends android.support.v4.app.Fragment implements AbsListView.OnItemClickListener {
 
     public String LOG_TAG = "MeasurenceSDK " + NotificationsFragment.class.getSimpleName();
-    private static final class PresenceNotification  {
-        PresenceSessionUpdate presenceSessionUpdate;
-        Date received;
-    }
 
 
     /**
@@ -77,11 +73,6 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
      */
     private AbsListView mListView;
 
-    /**
-     * The Adapter which will be used to populate the ListView/GridView with
-     * Views.
-     */
-    private ArrayAdapter<PresenceNotification> mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -99,64 +90,13 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if (mAdapter == null) {
-            mAdapter = new ArrayAdapter<PresenceNotification>(getActivity(),
-                    R.layout.list_item_notification, R.id.list_item_notification_view, new ArrayList<PresenceNotification>()) {
-
-                DateFormat dateFormat = DateFormat.getDateTimeInstance();
-
-                private void setText(View root, int id, String text) {
-                    TextView textView = (TextView) root.findViewById(id);
-                    textView.setText(text);
-                }
-
-                @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
-                    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    View itemView = inflater.inflate(R.layout.list_item_notification, null);
-                    PresenceNotification notification = getItem(position);
-                    PresenceSessionUpdate item =notification.presenceSessionUpdate;
-                    String now = dateFormat.format(notification.received);
-                    setText(itemView, R.id.list_item_notification_date, now);
-                    StringBuilder sb = new StringBuilder();
-                    for (UserIdentity userid : item.getUserIdentities()) {
-                        sb.append(userid.getId()).append(" ");
-                    }
-                    setText(itemView, R.id.list_item_notification_userid, sb.toString());
-                    setText(itemView, R.id.list_item_notification_storeid, item.getStoreKey());
-                    setText(itemView, R.id.list_item_notification_new_user, getString(item.getIsNewVisitorInStore().booleanValue() ? R.string.yes : R.string.no));
-                    setText(itemView, R.id.list_item_notification_status, item.getStatus());
-                    setText(itemView, R.id.list_item_notification_session_start, dateFormat.format(item.getInterval().getStart()));
-                    setText(itemView, R.id.list_item_notification_session_end, dateFormat.format(item.getInterval().getEnd()));
-                    return itemView;
-                }
-            };
-        }
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-
-            private void displaySessionUpdate(PresenceSessionUpdate presenceSessionUpdate) {
-                PresenceNotification notification = new PresenceNotification();
-                notification.presenceSessionUpdate = presenceSessionUpdate;
-                notification.received = new Date();
-                mAdapter.insert(notification, 0);
-                Log.i(LOG_TAG, "displaying session update|" + presenceSessionUpdate);
-            }
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String presenceSessionUpdateJson = intent.getStringExtra(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_JSON_PARAMETER);
-
-                displaySessionUpdate(PresenceSessionUpdate.fromJson(presenceSessionUpdateJson));
-
-            }
-        };
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver((broadcastReceiver), new IntentFilter(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_INTENT_ID));
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_clear) {
-            mAdapter.clear();
+            MainActivity mainActivity = (MainActivity) getActivity();
+            mainActivity.mAdapter.clear();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -170,7 +110,8 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
+        MainActivity mainActivity = (MainActivity) getActivity();
+        ((AdapterView<ListAdapter>) mListView).setAdapter(mainActivity.mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
