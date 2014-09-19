@@ -67,7 +67,7 @@ public class MainActivity extends ActionBarActivity {
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    ArrayAdapter<PresenceNotification> mAdapter;
+    static ArrayAdapter<PresenceNotification> mAdapter;
 
 
     private BroadcastReceiver subscriptionResultBroadcastReceiver;
