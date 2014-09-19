@@ -24,14 +24,7 @@
 
 package com.measurence.sdk.android.demo;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,20 +33,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-
-import com.measurence.sdk.android.PresenceSessionUpdate;
-import com.measurence.sdk.android.UserIdentity;
-import com.measurence.sdk.android.gcm_push_notifications.PresenceSessionUpdatesNotificationService;
-
-import junit.framework.TestCase;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * A fragment representing a list of Items.
@@ -89,7 +70,6 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
