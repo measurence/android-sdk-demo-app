@@ -76,7 +76,7 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_clear) {
             MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.mAdapter.clear();
+            mainActivity.presenceNotificationsListAdapter.clear();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -91,7 +91,7 @@ public class NotificationsFragment extends android.support.v4.app.Fragment imple
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         MainActivity mainActivity = (MainActivity) getActivity();
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mainActivity.mAdapter);
+        ((AdapterView<ListAdapter>) mListView).setAdapter(mainActivity.presenceNotificationsListAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);

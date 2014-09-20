@@ -68,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    static ArrayAdapter<PresenceNotification> mAdapter;
+    static ArrayAdapter<PresenceNotification> presenceNotificationsListAdapter;
 
 
     private BroadcastReceiver subscriptionResultBroadcastReceiver;
@@ -98,7 +98,6 @@ public class MainActivity extends ActionBarActivity {
         subscriptionResultBroadcastReceiver = new BroadcastReceiver() {
 
 
-
             @Override
             public void onReceive(Context context, Intent intent) {
                 String subscriptionResultMessage = intent.getStringExtra(MeasurenceApiSubscriptionService.SUBSCRIPTION_RESULT_INTENT_MESSAGE);
@@ -106,8 +105,8 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        if (mAdapter == null) {
-            mAdapter = new ArrayAdapter<PresenceNotification>(this,
+        if (presenceNotificationsListAdapter == null) {
+            presenceNotificationsListAdapter = new ArrayAdapter<PresenceNotification>(this,
                     R.layout.list_item_notification, R.id.list_item_notification_view, new ArrayList<PresenceNotification>()) {
 
                 DateFormat dateFormat = DateFormat.getDateTimeInstance();
@@ -122,7 +121,7 @@ public class MainActivity extends ActionBarActivity {
                     LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     View itemView = inflater.inflate(R.layout.list_item_notification, null);
                     PresenceNotification notification = getItem(position);
-                    PresenceSessionUpdate item =notification.presenceSessionUpdate;
+                    PresenceSessionUpdate item = notification.presenceSessionUpdate;
                     String now = dateFormat.format(notification.received);
                     setText(itemView, R.id.list_item_notification_date, now);
                     StringBuilder sb = new StringBuilder();
@@ -139,26 +138,26 @@ public class MainActivity extends ActionBarActivity {
                     return itemView;
                 }
             };
+            BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+                private void displaySessionUpdate(PresenceSessionUpdate presenceSessionUpdate) {
+                    PresenceNotification notification = new PresenceNotification();
+                    notification.presenceSessionUpdate = presenceSessionUpdate;
+                    notification.received = new Date();
+                    presenceNotificationsListAdapter.insert(notification, 0);
+                    Log.i(LOG_TAG, "displaying session update|" + presenceSessionUpdate);
+                }
+
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String presenceSessionUpdateJson = intent.getStringExtra(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_JSON_PARAMETER);
+
+                    displaySessionUpdate(PresenceSessionUpdate.fromJson(presenceSessionUpdateJson));
+
+                }
+            };
+            LocalBroadcastManager.getInstance(this).registerReceiver((broadcastReceiver), new IntentFilter(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_INTENT_ID));
         }
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-
-            private void displaySessionUpdate(PresenceSessionUpdate presenceSessionUpdate) {
-                PresenceNotification notification = new PresenceNotification();
-                notification.presenceSessionUpdate = presenceSessionUpdate;
-                notification.received = new Date();
-                mAdapter.insert(notification, 0);
-                Log.i(LOG_TAG, "displaying session update|" + presenceSessionUpdate);
-            }
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String presenceSessionUpdateJson = intent.getStringExtra(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_JSON_PARAMETER);
-
-                displaySessionUpdate(PresenceSessionUpdate.fromJson(presenceSessionUpdateJson));
-
-            }
-        };
-        LocalBroadcastManager.getInstance(this).registerReceiver((broadcastReceiver), new IntentFilter(PresenceSessionUpdatesNotificationService.SESSION_UPDATE_INTENT_ID));
 
     }
 
@@ -182,7 +181,7 @@ public class MainActivity extends ActionBarActivity {
             } else {
                 Log.i(LOG_TAG, "This device is not supported.");
                 finish();
-        }
+            }
             return false;
         }
         return true;
