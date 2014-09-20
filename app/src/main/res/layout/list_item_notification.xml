@@ -158,6 +158,26 @@
                 android:gravity="center_vertical"
                  />
         </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="UUID"
+                android:layout_marginRight="6dp"
+                />
+
+            <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                      android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:id="@+id/list_item_notification_session_UUID"
+                      android:text="UUID"
+                      android:gravity="center_vertical"
+                />
+        </TableRow>
     </TableLayout>
 
 

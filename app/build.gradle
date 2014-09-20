@@ -38,5 +38,5 @@ dependencies {
     compile 'com.android.support:support-v4:20.0.0'
     compile 'commons-io:commons-io:2.4'
     compile 'com.google.code.gson:gson:2.3'
-    compile 'com.measurence:measurence-android-sdk:0.1.0@aar'
+    compile 'com.measurence:measurence-android-sdk:0.1.2@aar'
 }

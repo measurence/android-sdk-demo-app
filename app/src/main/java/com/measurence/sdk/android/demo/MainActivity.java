@@ -135,6 +135,7 @@ public class MainActivity extends ActionBarActivity {
                     setText(itemView, R.id.list_item_notification_status, item.getStatus());
                     setText(itemView, R.id.list_item_notification_session_start, dateFormat.format(item.getInterval().getStart()));
                     setText(itemView, R.id.list_item_notification_session_end, dateFormat.format(item.getInterval().getEnd()));
+                    setText(itemView, R.id.list_item_notification_session_UUID, item.getUpdateUUID());
                     return itemView;
                 }
             };
